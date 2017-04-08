@@ -64,7 +64,7 @@ public class JdbcExample {
 		Class.forName("org.postgresql.Driver");
 //    	Class.forName("com.mysql.jdbc.Driver");
 //        con = DriverManager.getConnection("jdbc:mysql://127.0.0.1:"+tunnelPort+"/cos420?user="+strDbUser+"&password="+strDbPassword);
-		  con = DriverManager.getConnection("jdbc:postgresql://127.0.0.1:" + tunnelPort+ "/births", strDbUser,strDbPassword);
+		  con = DriverManager.getConnection("jdbc:postgresql://127.0.0.1:" + tunnelPort+ "/clinic", strDbUser,strDbPassword);
 
     	if(!con.isClosed())
           System.out.println("Successfully connected to Postgres server using TCP/IP...");
@@ -77,20 +77,21 @@ public class JdbcExample {
 	    Statement st = null;
 	
         String createStr = "CREATE TABLE " + tableName + " (userId INTEGER, firstName VARCHAR(30), lastName VARCHAR(30), countryCode VARCHAR(10), primary key(userID))";
-       	String dropStr = "DROP TABLE " + tableName;
+       	String dropStr = "DELETE FROM " + tableName;
     	
         DatabaseMetaData dbm = con.getMetaData();
         ResultSet tables = dbm.getTables("", "", tableName, null);
  
         st = con.createStatement();      
 
-        if (tables != null && tables.next()) {
+        if (tables == null) 
+        {
+        	    st.execute(createStr);
+        } else if (tables != null && tables.next()) {
         // Table exists
         	    st.executeUpdate(dropStr);  
-        	    System.out.println("Got rid of old nurse table");
+        	    System.out.println("Got rid of records in nurse table");
         }
-
-        st.executeUpdate(createStr);
 	
 	}
 	
